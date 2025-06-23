@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Additional CSS for layout -->
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8; /* Light background color for the whole page */
+        }
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40; /* Sidebar background color */
+            padding-top: 20px;
+            border-right: 1px solid #ddd;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Shadow effect for sidebar */
+        }
+        .sidenav h2 {
+            text-align: center;
+            font-size: 24px;
+            margin: 0;
+            padding: 0 15px;
+            color: #ffffff; /* Sidebar heading color */
+            font-family: 'Arial', sans-serif; /* Font style for heading */
+        }
+        .sidenav a {
+            padding: 12px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #ffffff; /* Link color */
+            display: block;
+            border-bottom: 1px solid #495057; /* Separator line between links */
+            transition: background-color 0.3s; /* Transition for background color on hover */
+        }
+        .sidenav a:hover {
+            background-color: #495057; /* Highlight color on hover */
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            background-color: #ffffff; /* Content background color */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow effect for content */
+            border-radius: 5px; /* Rounded corners */
+        }
+        h1 {
+            color: #343a40; /* Main heading color */
+            border-bottom: 2px solid #007bff; /* Bottom border for h1 */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif; /* Font style for main heading */
+        }
+        h2 {
+            color: #007bff; /* Subheading color */
+            border-bottom: 1px solid #ddd; /* Bottom border for h2 */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif; /* Font style for subheading */
+        }
+        p {
+            color: #555; /* Paragraph text color */
+            line-height: 1.6; /* Line height for better readability */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff; /* Header background color */
+            color: #fff; /* Header text color */
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Even row background color */
+        }
+        tbody tr:hover {
+            background-color: #e9ecef; /* Hover color for rows */
+        }
+        td a {
+            color: #007bff; /* Icon color */
+            margin-right: 10px; /* Space between icons */
+            text-decoration: none; /* Remove underline */
+        }
+        td a:hover {
+            color: #0056b3; /* Hover color for icons */
+        }
+        .fas {
+            font-size: 16px; /* Icon size */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidenav">
+        <h2>User Dashboard</h2>
+        <a href="{{ url_for('user_dashboard') }}">Home</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div class="content">
+        <h1>Welcome to the User Dashboard</h1>
+        <p>Hello, {{ session['user_name'] }}. You have user privileges.</p>
+        <h2>My Tasks</h2>
+
+        {% if tasks %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task ID</th>
+                        <th>Task Name</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Image</th> <!-- New column for task images -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        <tr>
+                            <td>{{ task.task_id }}</td>
+                            <td>{{ task.task_name }}</td>
+                            <td>{{ task.due_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ 'Completed' if task.status == 1 else 'Pending' }}</td>
+                            <td>
+                                {% if task.image %}
+                                    <img src="{{ url_for('static', filename='uploads/' + task.image) }}" alt="Task Image" width="100">
+                                {% else %}
+                                    <p>No Image</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('edit_task', task_id=task.task_id) }}" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" onclick="confirmDelete({{ task.task_id }}); return false;" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You have no tasks assigned.</p>
+        {% endif %}
+    </div>
+
+    <!-- SweetAlert2 Script -->
+    <script>
+        function confirmDelete(taskId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the delete route
+                    window.location.href = `/delete_task/${taskId}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

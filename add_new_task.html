@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Task</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Add New Task</h1>
+        <form method="POST" enctype="multipart/form-data"> <!-- Add enctype attribute -->
+            <div class="form-group">
+                <label for="task_name">Task Name:</label>
+                <input type="text" class="form-control" name="task_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="due_date">Due Date:</label>
+                <input type="datetime-local" class="form-control" name="due_date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select class="form-control" name="status" required>
+                    <option value="0">Pending</option>
+                    <option value="1">Completed</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="user_id">Assign to User:</label>
+                <select class="form-control" name="user_id" required>
+                    <option value="">Select User</option>
+                    {% for user in users %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option> <!-- user[0] for user_id, user[1] for user_name -->
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="task_image">Upload Image:</label>
+                <input type="file" class="form-control-file" name="task_image" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+        <a href="{{ url_for('manage_tasks') }}" class="btn btn-secondary mt-3">Back to Task Management</a>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

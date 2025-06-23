@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <!-- Include SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="datetime-local"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3085d6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #287bff;
+        }
+    </style>
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data">
+    <label for="task_name">Task Name:</label>
+    <input type="text" name="task_name" id="task_name" value="{{ task.task_name }}" required>
+    
+    <label for="due_date">Due Date:</label>
+    <input type="datetime-local" name="due_date" id="due_date" value="{{ task.due_date }}" required>
+    
+    <label for="status">Status:</label>
+    <select name="status" id="status" required>
+        <option value="0" {% if task.status == 0 %}selected{% endif %}>Pending</option>
+        <option value="1" {% if task.status == 1 %}selected{% endif %}>Completed</option>
+    </select>
+
+    <label for="task_image">Task Image:</label>
+    <input type="file" name="task_image" id="task_image">
+
+    <button type="submit">Update Task</button>
+</form>
+
+
+    <!-- Include SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.getElementById('edit-task-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the form from submitting immediately
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to save the changes?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, save it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();  // Submit the form if confirmed
+                }
+            });
+        });
+    </script>
+</body>
+</html>
